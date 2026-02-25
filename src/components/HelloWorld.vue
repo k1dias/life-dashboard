@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<h1 class="text-red-500">alouu alo</h1>
+<h1 class="text-red-500">alou alo</h1>
 </template>
 
 <style scoped>
