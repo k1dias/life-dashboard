@@ -1,9 +1,8 @@
-<script setup lang="ts">
-</script>
-
-<template> 
+<template>
+  <AuroraBackground />
   <RouterView />
 </template>
 
-<style scoped>
-</style>
+<script setup>
+  import AuroraBackground from './components/ui/AuroraBackground.vue'
+</script>
