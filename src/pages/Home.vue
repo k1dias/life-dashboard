@@ -76,17 +76,21 @@ function go() {
 
         <div class="relative mt-1">
           <!-- Glow layer -->
-          <h1 class="absolute inset-0 text-6xl font-semibold
+          <h1
+            class="absolute inset-0 text-6xl font-semibold
             bg-gradient-to-r from-purple-400 via-fuchsia-400 to-cyan-400
             bg-clip-text text-transparent
-            blur-sm opacity-70">
+            blur-sm opacity-70"
+          >
             Life Wrapped
           </h1>
 
           <!-- Texto principal -->
-          <h1 class="relative text-6xl font-semibold
+          <h1
+            class="relative text-6xl font-semibold
             bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-            bg-clip-text text-transparent">
+            bg-clip-text text-transparent"
+          >
             Life Wrapped
           </h1>
         </div>
@@ -98,10 +102,14 @@ function go() {
 
       <!-- Form Card -->
       <div class="mt-10">
-        <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+        <div
+          class="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl"
+        >
           <!-- sheen / light reflection -->
           <div class="pointer-events-none absolute inset-0">
-            <div class="absolute -top-24 left-1/2 h-48 w-[120%] -translate-x-1/2 rotate-6 bg-gradient-to-r from-purple-500/0 via-white/10 to-cyan-500/0 blur-2xl" />
+            <div
+              class="absolute -top-24 left-1/2 h-48 w-[120%] -translate-x-1/2 rotate-6 bg-gradient-to-r from-purple-500/0 via-white/10 to-cyan-500/0 blur-2xl"
+            />
             <div class="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
           </div>
 
@@ -120,9 +128,10 @@ function go() {
                         placeholder:text-zinc-500
                         focus:border-purple-400/40 focus:ring-2 focus:ring-purple-400/20"
                 />
-                <!-- agora funciona porque o input tem class 'peer' -->
-                <div class="pointer-events-none absolute inset-0 -z-10 rounded-2xl opacity-0 blur-xl transition-opacity duration-300
-                            peer-focus:opacity-100 bg-gradient-to-r from-purple-500/15 via-fuchsia-500/10 to-cyan-500/15" />
+                <div
+                  class="pointer-events-none absolute inset-0 -z-10 rounded-2xl opacity-0 blur-xl transition-opacity duration-300
+                            peer-focus:opacity-100 bg-gradient-to-r from-purple-500/15 via-fuchsia-500/10 to-cyan-500/15"
+                />
               </div>
 
               <button
@@ -137,7 +146,9 @@ function go() {
               >
                 <span class="relative z-10">Gerar meu Wrapped</span>
                 <span class="ml-2 relative z-10 opacity-80 group-hover:opacity-100 transition-opacity">›</span>
-                <span class="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/15 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <span
+                  class="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-white/0 via-white/15 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                />
               </button>
             </div>
 
@@ -149,111 +160,166 @@ function go() {
       </div>
 
       <!-- Teaser Title -->
-      <h2 class="mt-8 text-center text-3xl font-semibold tracking-tight
+      <h2
+        class="mt-8 text-center text-3xl font-semibold tracking-tight
         bg-gradient-to-r from-purple-400 via-fuchsia-300 to-purple-400
-        bg-clip-text text-transparent">
+        bg-clip-text text-transparent"
+      >
         Desde que você abriu essa página...
       </h2>
 
       <!-- Teaser Cards Grid -->
-      <div class="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-5">
-
-      <!-- Card 1 - Sol -->
-      <div class="relative flex flex-col justify-center items-center
+      <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
+        <!-- Card 1 - Sol -->
+        <div
+          class="relative flex min-h-[200px] flex-col items-center justify-center
                   rounded-3xl border border-white/10 bg-white/5
-                  p-6 backdrop-blur-2xl
+                  p-6 text-center backdrop-blur-2xl
                   shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-                  min-h-[200px] text-center">
+                  overflow-hidden"
+        >
+          <!-- overlay aurora do card -->
+          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
 
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10 rounded-3xl" />
+          <!-- ORBIT overlay (Terra girando continuamente) -->
+          <svg
+            class="pointer-events-none absolute inset-0 opacity-90"
+            viewBox="0 22 100 70"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <path
+              id="orbitPath"
+              d="M 8 26
+     H 92
+     Q 96 26 96 30
+     V 70
+     Q 96 74 92 74
+     H 8
+     Q 4 74 4 70
+     V 30
+     Q 4 26 8 26"
+              fill="none"
+              stroke="rgba(255,255,255,0.10)"
+              stroke-width="0.6"
+            />
 
-        <p class="text-sm text-zinc-300"> Você já percorreu</p>
+            <g>
+              <!-- glow -->
+              <circle r="2.8" fill="rgba(34,211,238,0.25)">
+                <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+                  <mpath href="#orbitPath" />
+                </animateMotion>
+              </circle>
 
-        <p class="mt-3 text-3xl font-semibold tracking-tight
-          bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-          bg-clip-text text-transparent
-          drop-shadow-[0_0_22px_rgba(168,85,247,0.35)]">
-          {{ formattedKmAroundSun }} km
-        </p>
+              <!-- core -->
+              <circle r="1.7" fill="rgba(34,211,238,0.95)">
+                <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+                  <mpath href="#orbitPath" />
+                </animateMotion>
+              </circle>
 
-        <p class="mt-2 text-sm text-zinc-300"> Ao redor do Sol ☀️</p>
+              <!-- highlight -->
+              <circle r="0.6" cx="-0.6" cy="-0.6" fill="rgba(255,255,255,0.9)">
+                <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+                  <mpath href="#orbitPath" />
+                </animateMotion>
+              </circle>
+            </g>
+          </svg>
 
-        <p class="mt-2 text-xs text-zinc-400">
-          ~29,78 km por segundo
-        </p>
-      </div>
+          <!-- Conteúdo do card -->
+          <div class="relative">
+            <p class="text-sm text-zinc-300">Você já percorreu</p>
 
+            <p
+              class="mt-3 text-3xl font-semibold tracking-tight
+              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+              bg-clip-text text-transparent
+              drop-shadow-[0_0_22px_rgba(168,85,247,0.35)]"
+            >
+              {{ formattedKmAroundSun }} km
+            </p>
 
-      <!-- Card 2 - Sangue -->
-      <div class="relative flex flex-col justify-center items-center
+            <p class="mt-2 text-sm text-zinc-300">Ao redor do Sol ☀️</p>
+
+            <p class="mt-2 text-xs text-zinc-400">~29,78 km por segundo</p>
+          </div>
+        </div>
+
+        <!-- Card 2 - Sangue -->
+        <div
+          class="relative flex min-h-[200px] flex-col items-center justify-center
                   rounded-3xl border border-white/10 bg-white/5
-                  p-6 backdrop-blur-2xl
-                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-                  min-h-[200px] text-center">
+                  p-6 text-center backdrop-blur-2xl
+                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+        >
+          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
 
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10 rounded-3xl" />
+          <div class="relative">
+            <p class="text-sm text-zinc-300">Seu coração bombeou</p>
 
-        <p class="text-sm text-zinc-300">Seu coração bombeou</p>
+            <p
+              class="mt-3 text-3xl font-semibold tracking-tight
+              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+              bg-clip-text text-transparent"
+            >
+              {{ formattedBloodMl }} ml
+            </p>
 
-        <p class="mt-3 text-3xl font-semibold tracking-tight
-          bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-          bg-clip-text text-transparent">
-          {{ formattedBloodMl }} ml
-        </p>
+            <p class="mt-2 text-sm text-zinc-300">De sangue 🫀</p>
 
-        <p class="mt-2 text-sm text-zinc-300">De sangue 🫀</p>
+            <p class="mt-2 text-xs text-zinc-400">*estimativa em repouso</p>
+          </div>
+        </div>
 
-        <p class="mt-2 text-xs text-zinc-400">
-          *estimativa em repouso
-        </p>
-      </div>
-
-
-      <!-- Card 3 - Bebês -->
-      <div class="relative flex flex-col justify-center items-center
+        <!-- Card 3 - Bebês -->
+        <div
+          class="relative flex min-h-[200px] flex-col items-center justify-center
                   rounded-3xl border border-white/10 bg-white/5
-                  p-6 backdrop-blur-2xl
-                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-                  min-h-[200px] text-center">
+                  p-6 text-center backdrop-blur-2xl
+                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+        >
+          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
 
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10 rounded-3xl" />
+          <div class="relative">
+            <p class="text-sm text-zinc-300">Bebês</p>
 
-        <p class="text-sm text-zinc-300">Bebês</p>
+            <p
+              class="mt-3 text-3xl font-semibold tracking-tight
+              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+              bg-clip-text text-transparent"
+            >
+              {{ formattedBabiesBorn }}
+            </p>
 
-        <p class="mt-3 text-3xl font-semibold tracking-tight
-          bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-          bg-clip-text text-transparent">
-          {{ formattedBabiesBorn }}
-        </p>
+            <p class="mt-2 text-xs text-zinc-300">Nasceram no mundo 👶</p>
+          </div>
+        </div>
 
-        <p class="mt-2 text-xs text-zinc-300">
-          Nasceram no mundo 👶
-        </p>
-      </div>
-
-
-      <!-- Card 4 - Dinheiro -->
-      <div class="relative flex flex-col justify-center items-center
+        <!-- Card 4 - Dinheiro -->
+        <div
+          class="relative flex min-h-[200px] flex-col items-center justify-center
                   rounded-3xl border border-white/10 bg-white/5
-                  p-6 backdrop-blur-2xl
-                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-                  min-h-[200px] text-center">
+                  p-6 text-center backdrop-blur-2xl
+                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+        >
+          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
 
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10 rounded-3xl" />
+          <div class="relative">
+            <p class="text-sm text-zinc-300">Foram transacionados</p>
 
-        <p class="text-sm text-zinc-300">Foram transacionados</p>
+            <p
+              class="mt-3 text-3xl font-semibold tracking-tight
+              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+              bg-clip-text text-transparent"
+            >
+              {{ formattedBrMoneyFlow }}
+            </p>
 
-        <p class="mt-3 text-3xl font-semibold tracking-tight
-          bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-          bg-clip-text text-transparent">
-          {{ formattedBrMoneyFlow }}
-        </p>
-
-        <p class="mt-2 text-xs text-zinc-300">
-          No Brasli 💸
-        </p>
-      </div>
-
+            <p class="mt-2 text-xs text-zinc-300">No Brasil 💸</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
