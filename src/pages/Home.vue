@@ -1,70 +1,77 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useIntervalFn } from '@vueuse/core'
 import { useUserStore } from '../stores/user'
+import StatCard from '../components/ui/StatCard.vue'
 
 const router = useRouter()
 const user = useUserStore()
+const startedAt = ref(0)
+const elapsedSeconds = ref(0)
+const CONSTANTS = {
+  EARTH_ORBIT_KM_PER_SEC: 29.78,
+  BLOOD_ML_PER_SEC: 81.67,
+  BABIES_PER_SEC: 4.3,
+  BRL_PER_SEC: 11_000_000_000_000 / 31536000
+}
+let rafId = 0
 
-const dob = ref(user.birthISO) 
-
-const startedAt = ref(Date.now())
-const now = ref(Date.now())
-
-useIntervalFn(() => {
-  now.value = Date.now()
-}, 100)
-
-const secondsOnPage = computed(() => Math.floor((now.value - startedAt.value) / 1000))
-
-// Calculos sol
-const kmAroundSun = computed(() => {
-  const earthOrbitKmPerSec = 29.78
-  return secondsOnPage.value * earthOrbitKmPerSec
+onMounted(() => {
+  startedAt.value = performance.now()
+  rafId = requestAnimationFrame(tick)
 })
 
-const formattedKmAroundSun = computed(() => 
-  kmAroundSun.value.toLocaleString('pt-BR', { maximumFractionDigits: 1 })
-)
-
-// Calculos sangue bombeado
-const bloodMl = computed(() => {
-  const BLOOD_ML_PER_SECOND = 81.67 // ~70ml/batida * 70bpm / 60
-  return secondsOnPage.value * BLOOD_ML_PER_SECOND
+onUnmounted(() => {
+  cancelAnimationFrame(rafId)
 })
-const formattedBloodMl = computed(() =>
-  bloodMl.value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })
-)
 
-// Calculos bebês nascidos no mundo
-const babiesBorn = computed(() => {
-  const BABIES_BORN_PER_SECOND = 4.3
-  return secondsOnPage.value * BABIES_BORN_PER_SECOND
-})
-const formattedBabiesBorn = computed(() =>
-  babiesBorn.value.toLocaleString('pt-BR', { maximumFractionDigits: 0 })
-)
-
-// Calculos dinheiro gasto no brasil
-const brMoneyFlow = computed(() => {
-  const BR_GDP_BRL_YEAR = 11_000_000_000_000 // ajuste se quiser (11T BRL placeholder)
-  const SECONDS_PER_YEAR = 365 * 24 * 60 * 60
-  const brlPerSecond = BR_GDP_BRL_YEAR / SECONDS_PER_YEAR
-  return secondsOnPage.value * brlPerSecond
-})
-const formattedBrMoneyFlow = computed(() =>
-  brMoneyFlow.value.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-    maximumFractionDigits: 0
-  })
-)
+function tick() {
+  elapsedSeconds.value = (performance.now() - startedAt.value) / 1000
+  rafId = requestAnimationFrame(tick)
+}
 
 function go() {
   user.setBirthISO(dob.value)
   router.push({ name: 'dashboard' })
 }
+
+function formatNumber(value: number, fractionDigits = 0) {
+  return value.toLocaleString('pt-BR', {
+    maximumFractionDigits: fractionDigits
+  })
+}
+
+function formatCurrency(value: number) {
+  return value.toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    maximumFractionDigits: 0
+  })
+}
+
+const dob = computed({
+  get: () => user.birthISO,
+  set: (value: string) => user.setBirthISO(value)
+})
+
+const secondsOnPage = computed(() => elapsedSeconds.value)
+
+const kmAroundSun = computed(() => secondsOnPage.value * CONSTANTS.EARTH_ORBIT_KM_PER_SEC)
+
+const bloodMl = computed(() => secondsOnPage.value * CONSTANTS.BLOOD_ML_PER_SEC)
+
+const babiesBorn = computed(() => secondsOnPage.value * CONSTANTS.BABIES_PER_SEC)
+
+const brMoneyFlow = computed(() => secondsOnPage.value * CONSTANTS.BRL_PER_SEC)
+
+const formattedKmAroundSun = computed(() => formatNumber(kmAroundSun.value))
+
+const formattedBloodMl = computed(() => formatNumber(bloodMl.value))
+
+const formattedBabiesBorn = computed(() => formatNumber(babiesBorn.value))
+
+const formattedBrMoneyFlow = computed(() => formatCurrency(brMoneyFlow.value))
+
 </script>
 
 <template>
@@ -171,155 +178,103 @@ function go() {
       <!-- Teaser Cards Grid -->
       <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2">
         <!-- Card 1 - Sol -->
-        <div
-          class="relative flex min-h-[200px] flex-col items-center justify-center
-                  rounded-3xl border border-white/10 bg-white/5
-                  p-6 text-center backdrop-blur-2xl
-                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]
-                  overflow-hidden"
+        <StatCard
+          title="Você já percorreu"
+          subtitle="Ao redor do Sol ☀️"
+          footer="~29,78 km por segundo"
         >
-          <!-- overlay aurora do card -->
-          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
-
-          <!-- ORBIT overlay (Terra girando continuamente) -->
-          <svg
-            class="pointer-events-none absolute inset-0 opacity-90"
-            viewBox="0 22 100 70"
-            preserveAspectRatio="none"
-            aria-hidden="true"
-          >
-            <path
-              id="orbitPath"
-              d="M 8 26
-     H 92
-     Q 96 26 96 30
-     V 70
-     Q 96 74 92 74
-     H 8
-     Q 4 74 4 70
-     V 30
-     Q 4 26 8 26"
-              fill="none"
-              stroke="rgba(255,255,255,0.10)"
-              stroke-width="0.6"
-            />
-
-            <g>
-              <!-- glow -->
-              <circle r="2.8" fill="rgba(34,211,238,0.25)">
-                <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
-                  <mpath href="#orbitPath" />
-                </animateMotion>
-              </circle>
-
-              <!-- core -->
-              <circle r="1.7" fill="rgba(34,211,238,0.95)">
-                <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
-                  <mpath href="#orbitPath" />
-                </animateMotion>
-              </circle>
-
-              <!-- highlight -->
-              <circle r="0.6" cx="-0.6" cy="-0.6" fill="rgba(255,255,255,0.9)">
-                <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
-                  <mpath href="#orbitPath" />
-                </animateMotion>
-              </circle>
-            </g>
-          </svg>
-
-          <!-- Conteúdo do card -->
-          <div class="relative">
-            <p class="text-sm text-zinc-300">Você já percorreu</p>
-
-            <p
-              class="mt-3 text-3xl font-semibold tracking-tight
-              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-              bg-clip-text text-transparent
-              drop-shadow-[0_0_22px_rgba(168,85,247,0.35)]"
+          <!-- Overlay extra: órbita -->
+          <template #overlay>
+            <svg
+              class="pointer-events-none absolute inset-0 opacity-90"
+              viewBox="0 22 100 70"
+              preserveAspectRatio="none"
+              aria-hidden="true"
             >
-              {{ formattedKmAroundSun }} km
-            </p>
+              <path
+                id="orbitPathSun"
+                d="M 8 26
+                  H 92
+                  Q 96 26 96 30
+                  V 70
+                  Q 96 74 92 74
+                  H 8
+                  Q 4 74 4 70
+                  V 30
+                  Q 4 26 8 26"
+                fill="none"
+                stroke="rgba(255,255,255,0.10)"
+                stroke-width="0.6"
+              />
 
-            <p class="mt-2 text-sm text-zinc-300">Ao redor do Sol ☀️</p>
+              <g>
+                <circle r="2.8" fill="rgba(34,211,238,0.25)">
+                  <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#orbitPathSun" />
+                  </animateMotion>
+                </circle>
 
-            <p class="mt-2 text-xs text-zinc-400">~29,78 km por segundo</p>
-          </div>
-        </div>
+                <circle r="1.7" fill="rgba(34,211,238,0.95)">
+                  <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#orbitPathSun" />
+                  </animateMotion>
+                </circle>
+
+                <circle r="0.6" cx="-0.6" cy="-0.6" fill="rgba(255,255,255,0.9)">
+                  <animateMotion dur="14s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#orbitPathSun" />
+                  </animateMotion>
+                </circle>
+              </g>
+            </svg>
+          </template>
+
+          <p
+            class="mt-3 text-3xl font-semibold tracking-tight
+                  bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+                  bg-clip-text text-transparent
+                  drop-shadow-[0_0_22px_rgba(168,85,247,0.35)]"
+          >
+            {{ formattedKmAroundSun }} km
+          </p>
+        </StatCard>
 
         <!-- Card 2 - Sangue -->
-        <div
-          class="relative flex min-h-[200px] flex-col items-center justify-center
-                  rounded-3xl border border-white/10 bg-white/5
-                  p-6 text-center backdrop-blur-2xl
-                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
+        <StatCard
+          title="Seu coração bombeou"
+          subtitle="De sangue 🫀"
+          footer="*estimativa em repouso"
         >
-          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
-
-          <div class="relative">
-            <p class="text-sm text-zinc-300">Seu coração bombeou</p>
-
-            <p
-              class="mt-3 text-3xl font-semibold tracking-tight
-              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-              bg-clip-text text-transparent"
-            >
-              {{ formattedBloodMl }} ml
-            </p>
-
-            <p class="mt-2 text-sm text-zinc-300">De sangue 🫀</p>
-
-            <p class="mt-2 text-xs text-zinc-400">*estimativa em repouso</p>
-          </div>
-        </div>
+          <p
+            class="mt-3 text-3xl font-semibold tracking-tight
+                  bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+                  bg-clip-text text-transparent"
+          >
+            {{ formattedBloodMl }} ml
+          </p>
+        </StatCard>
 
         <!-- Card 3 - Bebês -->
-        <div
-          class="relative flex min-h-[200px] flex-col items-center justify-center
-                  rounded-3xl border border-white/10 bg-white/5
-                  p-6 text-center backdrop-blur-2xl
-                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
-        >
-          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
-
-          <div class="relative">
-            <p class="text-sm text-zinc-300">Bebês</p>
-
-            <p
-              class="mt-3 text-3xl font-semibold tracking-tight
-              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-              bg-clip-text text-transparent"
-            >
-              {{ formattedBabiesBorn }}
-            </p>
-
-            <p class="mt-2 text-xs text-zinc-300">Nasceram no mundo 👶</p>
-          </div>
-        </div>
+        <StatCard title="Nasceram" subtitle="Bebês no mundo 👶">
+          <p
+            class="mt-3 text-3xl font-semibold tracking-tight
+                  bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+                  bg-clip-text text-transparent"
+          >
+            {{ formattedBabiesBorn }}
+          </p>
+        </StatCard>
 
         <!-- Card 4 - Dinheiro -->
-        <div
-          class="relative flex min-h-[200px] flex-col items-center justify-center
-                  rounded-3xl border border-white/10 bg-white/5
-                  p-6 text-center backdrop-blur-2xl
-                  shadow-[0_20px_60px_rgba(0,0,0,0.35)]"
-        >
-          <div class="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-purple-500/10 via-transparent to-cyan-500/10" />
-
-          <div class="relative">
-            <p class="text-sm text-zinc-300">Foram transacionados</p>
-
-            <p
-              class="mt-3 text-3xl font-semibold tracking-tight
-              bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
-              bg-clip-text text-transparent"
-            >
-              {{ formattedBrMoneyFlow }}
-            </p>
-
-            <p class="mt-2 text-xs text-zinc-300">No Brasil 💸</p>
-          </div>
-        </div>
+        <StatCard title="Foram transacionados" subtitle="No Brasil 💸">
+          <p
+            class="mt-3 text-3xl font-semibold tracking-tight
+                  bg-gradient-to-r from-purple-300 via-fuchsia-300 to-cyan-300
+                  bg-clip-text text-transparent"
+          >
+            {{ formattedBrMoneyFlow }}
+          </p>
+        </StatCard>
       </div>
     </div>
   </div>
