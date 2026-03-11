@@ -8,13 +8,18 @@ const router = useRouter()
 const user = useUserStore()
 const startedAt = ref(0)
 const elapsedSeconds = ref(0)
+const todayISO = new Date().toISOString().split('T')[0]
 const CONSTANTS = {
   EARTH_ORBIT_KM_PER_SEC: 29.78,
   BLOOD_ML_PER_SEC: 81.67,
   BABIES_PER_SEC: 4.3,
   BRL_PER_SEC: 11_000_000_000_000 / 31536000
 }
+const showDobError = computed(() => {
+  return !!dob.value && !isDobValid.value
+})
 let rafId = 0
+let lastUpdate = 0
 
 onMounted(() => {
   startedAt.value = performance.now()
@@ -25,13 +30,17 @@ onUnmounted(() => {
   cancelAnimationFrame(rafId)
 })
 
-function tick() {
-  elapsedSeconds.value = (performance.now() - startedAt.value) / 1000
+function tick(now: number) {
+  if (now - lastUpdate >= 100) {
+    elapsedSeconds.value = (performance.now() - startedAt.value) / 1000
+    lastUpdate = now
+  }
+  
   rafId = requestAnimationFrame(tick)
 }
 
 function go() {
-  user.setBirthISO(dob.value)
+  if (!isDobValid.value) return
   router.push({ name: 'dashboard' })
 }
 
@@ -71,6 +80,16 @@ const formattedBloodMl = computed(() => formatNumber(bloodMl.value))
 const formattedBabiesBorn = computed(() => formatNumber(babiesBorn.value))
 
 const formattedBrMoneyFlow = computed(() => formatCurrency(brMoneyFlow.value))
+
+const isDobValid = computed(() => {
+  if (!dob.value) return false
+
+  const selectedDate = new Date(`${dob.value}T00:00:00`)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+
+  return !Number.isNaN(selectedDate.getTime()) && selectedDate <= today
+})
 
 </script>
 
@@ -131,10 +150,17 @@ const formattedBrMoneyFlow = computed(() => formatCurrency(brMoneyFlow.value))
                 <input
                   v-model="dob"
                   type="date"
+                  :max="todayISO"
                   class="peer w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-zinc-100 outline-none backdrop-blur-xl
                         placeholder:text-zinc-500
                         focus:border-purple-400/40 focus:ring-2 focus:ring-purple-400/20"
                 />
+                <p
+                  v-if="showDobError"
+                  class="mt-3 text-xs text-rose-300"
+                >
+                  Escolha uma data igual ou anterior a hoje.
+                </p>
                 <div
                   class="pointer-events-none absolute inset-0 -z-10 rounded-2xl opacity-0 blur-xl transition-opacity duration-300
                             peer-focus:opacity-100 bg-gradient-to-r from-purple-500/15 via-fuchsia-500/10 to-cyan-500/15"
@@ -144,12 +170,14 @@ const formattedBrMoneyFlow = computed(() => formatCurrency(brMoneyFlow.value))
               <button
                 type="button"
                 @click="go"
+                :disabled="!isDobValid"
                 class="group relative inline-flex items-center justify-center rounded-2xl px-6 py-3 text-sm font-semibold text-white
                       bg-gradient-to-r from-purple-500 via-fuchsia-500 to-cyan-500
                       shadow-[0_10px_30px_rgba(168,85,247,0.25)]
                       hover:shadow-[0_14px_40px_rgba(34,211,238,0.22)]
                       transition-all duration-300
-                      active:scale-[0.99]"
+                      active:scale-[0.99]
+                      disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:shadow-[0_10px_30px_rgba(168,85,247,0.25)]"
               >
                 <span class="relative z-10">Gerar meu Wrapped</span>
                 <span class="ml-2 relative z-10 opacity-80 group-hover:opacity-100 transition-opacity">›</span>
